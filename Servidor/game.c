@@ -1,5 +1,6 @@
 #include "game.h"
 
+
 //190.171.112.67
 
 void setRespUser(struct userGame *userG, int puntosSet[], int len){
@@ -44,14 +45,14 @@ struct gameAct*  inicializarGame(struct clientConect *cliente,struct userGame *u
 }
 
 void startGame(struct gameAct* juegoActual){
-   sendQuestions(juegoActual);
+   sendQuestions(juegoActual, 1);
 }
 
-void sendQuestions(struct gameAct* juegoActual){
+void sendQuestions(struct gameAct* juegoActual, int jugador){
   sendDataUser(juegoActual->myCliente, "initq\n"); //se le dice que está a punto de recibir preguntas
-  int i = 0;
+  int i;
   int respuesta = 0;
-  for(i; i < 5; i++){
+  for(i = 0; i < 5; i++){
     int j;
     printf("Mandando pregunta %d \n", i);
     for(j = 0; j < 4; j++){
@@ -59,18 +60,23 @@ void sendQuestions(struct gameAct* juegoActual){
       sleep(1);
     }
 
-    while(1){
-      getDataUser(juegoActual->myCliente,&respuesta);
-      printf("Valor respuesta en ciclo: %d \n", respuesta);
-      if(respuesta != 0){
-        printf("Es distinto de 0 %d El valor de i es: %d \n",respuesta, i);
-        break;
-      }
-      sleep(1);
-    }
+    bzero(&respuesta, sizeof(respuesta));
+    read(juegoActual->myCliente->connfd,&respuesta , sizeof(respuesta));
+    sleep(1);
 
     respuesta = respuesta - '0';
+
+    if(respuesta > 0 && respuesta < 3){
+      if(jugador == 1){
+        juegoActual->userA->resp[i] = respuesta;
+      }else{
+        juegoActual->userB->resp[i] = respuesta;
+      }
+    }
+
+
     printf("Respuesta User: %d  contador: %d \n", respuesta, i);
+    sleep(1);
   }
 
   sendDataUser(juegoActual->myCliente, "endq \n"); //se le dice que ya no hay más preguntas

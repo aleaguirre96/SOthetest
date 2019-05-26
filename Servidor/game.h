@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <strings.h>
 #include "server.h"
 #define MAXRONDA 4
 #define MAXQUEST 5
@@ -32,7 +33,7 @@ void setQuestionS(struct gameAct* juegoActual);
 void setRespUser(struct userGame *userG, int puntosSet[], int);
 void setTextPregunta(struct pregunta *ptPregunta, char* preguntaTextSet[], int);
 void setPregunta(struct gameAct *tmpGame, struct pregunta *preg[5], int);
-void sendQuestions(struct gameAct* );
+void sendQuestions(struct gameAct*, int);
 struct gameAct* inicializarGame(struct clientConect *,struct userGame *, struct userGame *, int, struct pregunta *preg[5]);
 void startGame(struct gameAct* );
 

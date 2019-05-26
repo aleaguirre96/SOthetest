@@ -106,7 +106,7 @@ int menuCliente(struct clientConect * myCliente){
   sendDataUser(myCliente, mensaje);
   getDataUser(myCliente, &optionUser);
   optionUser = optionUser - '0'; //En este caso por que se que espero un char 1, 2, 3 ...
-  printf("La option del Usuario es: %d ",optionUser);
+  printf("La option del Usuario es: %d \n",optionUser);
   return optionUser;
 }
 
