@@ -48,22 +48,31 @@ void startGame(struct gameAct* juegoActual){
 }
 
 void sendQuestions(struct gameAct* juegoActual){
-  sendDataUser(juegoActual->myCliente, "initq"); //se le dice que está a punto de recibir preguntas
+  sendDataUser(juegoActual->myCliente, "initq\n"); //se le dice que está a punto de recibir preguntas
   int i = 0;
-  while( i < 5){
+  int respuesta = 0;
+  for(i; i < 5; i++){
     int j;
     printf("Mandando pregunta %d \n", i);
     for(j = 0; j < 4; j++){
       sendDataUser(juegoActual->myCliente,juegoActual->preguntas[i]->preguntaText[j]);
+      sleep(1);
     }
-    int respuesta;
-    printf("llego aca...| %s|\n",juegoActual->preguntas[i]->preguntaText[0]);
-    i = i + 1;
-    //getDataUser(juegoActual->myCliente,&respuesta);
+
+    while(1){
+      getDataUser(juegoActual->myCliente,&respuesta);
+      printf("Valor respuesta en ciclo: %d \n", respuesta);
+      if(respuesta != 0){
+        printf("Es distinto de 0 %d El valor de i es: %d \n",respuesta, i);
+        break;
+      }
+      sleep(1);
+    }
+
     respuesta = respuesta - '0';
-    printf("Respuesta User: %d \n contador: %d", respuesta, i);
+    printf("Respuesta User: %d  contador: %d \n", respuesta, i);
   }
 
-  sendDataUser(juegoActual->myCliente, "endq"); //se le dice que ya no hay más preguntas
+  sendDataUser(juegoActual->myCliente, "endq \n"); //se le dice que ya no hay más preguntas
   printf("Finaliza turno...\n");
 }

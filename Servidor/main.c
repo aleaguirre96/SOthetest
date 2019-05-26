@@ -11,7 +11,7 @@ int main()
 
   while(1){ //Aqui de llamarse la funcion menu del servidor
     sleep(1);
-    printf("Aqui sigue el main\n");
+    printf(" [s] \n");
   }
 
   return 0;

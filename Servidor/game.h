@@ -2,6 +2,7 @@
 #define _game_h
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "server.h"
 #define MAXRONDA 4
 #define MAXQUEST 5
