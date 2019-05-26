@@ -1,8 +1,6 @@
 #include "game.h"
 
 
-//190.171.112.67
-
 void setRespUser(struct userGame *userG, int puntosSet[], int len){
   int i;
   for(i = 0; i < len; i++) userG->resp[i] = puntosSet[i];
@@ -45,7 +43,18 @@ struct gameAct*  inicializarGame(struct clientConect *cliente,struct userGame *u
 }
 
 void startGame(struct gameAct* juegoActual){
+   //Pedir usuario contrincante
+   //Pedir preguntas a la base
+   //
    sendQuestions(juegoActual, 1);
+   //mandar los datos a los datos
+}
+
+void continuarJuego(struct gameAct* juegoActual){
+  sendQuestions(juegoActual, 2);
+  //Mandar datos a la base
+  if(juegoActual->ronda < MAXRONDA) {}//se sigue con la otra ronda
+  //inicializar un nuevo juego con los jugadores invertidos
 }
 
 void sendQuestions(struct gameAct* juegoActual, int jugador){
@@ -74,7 +83,8 @@ void sendQuestions(struct gameAct* juegoActual, int jugador){
       }
     }
 
-
+    if(jugador == 2)
+       juegoActual->ronda++; //se aumenta la ronda
     printf("Respuesta User: %d  contador: %d \n", respuesta, i);
     sleep(1);
   }
