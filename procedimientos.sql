@@ -10,7 +10,38 @@ DELIMITER ;
 
 CALL create_user("joseA","1234");
 CALL create_user("monseA","1234");
-select * from JUGADOR;
+CALL create_user("userPru","1234");
+
+DELIMITER //
+CREATE PROCEDURE get_users()
+	BEGIN
+		select * from JUGADOR;
+	END//
+DELIMITER ;
+
+call get_users(); 
+#DELETE FROM JUGADOR WHERE ID_JUGADOR = 9;
+
+DELIMITER //
+CREATE PROCEDURE validate_login(IN pUSERNAME VARCHAR(50),IN pPASS VARCHAR(50))
+	BEGIN
+		DECLARE qEncontrado INT;
+		SELECT COUNT(ID_JUGADOR)
+		INTO qEncontrado
+		FROM JUGADOR
+		WHERE USERNAME= pUSERNAME AND PASS = pPASS;
+
+		IF(qEncontrado != 1) THEN
+           SIGNAL SQLSTATE '45000'
+           SET MESSAGE_TEXT = 'Contrasena o clave no valida';
+		END IF;
+	END//
+DELIMITER ;
+
+call validate_login("joseA","1234");
+
+
+
 
 DELIMITER //
 CREATE PROCEDURE create_partida(IN pidA INT, IN pidB INT, OUT pidPart INT)
