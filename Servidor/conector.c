@@ -75,7 +75,7 @@ int login_add_User(struct conectionInfo * Myconector, char* UserName,char* Pass,
 }
 
 
-int main() {
+/*int main() {
   struct conectionInfo * myConector = setInfo("localhost","malexander","Usuario.1", "JUEGODB");
   getSome(myConector,"call get_users();",3);
   int resp = login_add_User(myConector,"aguirre","1234","call create_user(?, ?);");
@@ -83,4 +83,4 @@ int main() {
   int resp2 =login_add_User(myConector, "aguirre", "1234","call validate_login(?, ?);");
   printf("Retorna login user: %d\n", resp2);
   return 0;
-}
+}*/
