@@ -3,7 +3,7 @@
 #include "conector.h"
 //Para ejecutar el programa se usa el comando
 //gcc  game.c server.c main.c -o main -lpthread $(mysql_config --cflags) conector.c $(mysql_config --libs)
-// -o conector
+
 
 int main()
 {

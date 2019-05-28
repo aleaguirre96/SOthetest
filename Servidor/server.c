@@ -81,14 +81,7 @@ void *funcHiloCliente(void * clientConect){
   if (!clientConect) pthread_exit(0); //Si es nula el puntero del cliente sale;
   myCliente = (struct clientConect *)clientConect; //hace el cast del parametro
 
-  int option = 0;
-  while(option != 3){
-    if(option < 0) break;
-    option = menuCliente(myCliente);
-    //Resolver la opcion que píde el cliente
-    if(option == 1) jugar(myCliente);
-    sleep(1);
-  }
+
   printf("El cliene %d se ha desconectado \n",myCliente->connfd);
 
   close(myCliente->connfd);
@@ -97,7 +90,18 @@ void *funcHiloCliente(void * clientConect){
 }
 
 void resolverPeticion(struct clientConect * myCliente){
+  int option = 0;
+  while(option != 3){
+    if(option < 0) break;
+    option = menuCliente(myCliente);
+    //Resolver la opcion que píde el cliente
+    if(option == 1) jugar(myCliente);
+    sleep(1);
+  }
+}
 
+int menuInicial(){
+  char mensaje[100] = "Menu User \n .\n 2-Nuevo Usuario.\n 3-Salir";
 }
 
 int menuCliente(struct clientConect * myCliente){

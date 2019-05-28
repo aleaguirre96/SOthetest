@@ -15,7 +15,7 @@ struct conectionInfo{
 };
 
 int getConection(struct conectionInfo *);
-void getSome(struct conectionInfo *, char*, int);
+MYSQL_ROW getSome(struct conectionInfo *, char*, int);
 struct conectionInfo * setInfo(char*, char*, char*, char*);
 int login_add_User(struct conectionInfo *, char* , char*, char*);
 
