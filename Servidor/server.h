@@ -23,16 +23,16 @@ struct clientConect{ //estrucura que representa la coneccion de un cliente con e
 };
 
 void runServer(char*, int, int);
-void inicializarServerStruct(struct servidor *,char*, int, int);
+struct servidor *  inicializarServerStruct(char*, int, int);
 void inicializarPuerto(struct servidor *);
 void bindSocketIP(struct servidor *);
 void listenUsers(struct servidor *);
 void aceptUsers(struct servidor *);
 void *funcHiloCliente(void * );
 void *funcHiloEscucharClientes(void * );
-int menuCliente(struct clientConect *);
 void sendDataUser(struct clientConect *, char*);
-void getDataUser(struct clientConect *, void*);
+//void sendDataUser(struct clientConect * myCliente, char mensaje[]);
+int getDataUser(struct clientConect *, void*);
 void resolverPeticion(struct clientConect *);
 void jugar(struct clientConect * );
 
