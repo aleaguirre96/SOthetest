@@ -14,8 +14,13 @@ struct conectionInfo{
   MYSQL_STMT *stmt;
 };
 
+struct filaSelect{
+  char* fila_result[120];
+  int filas;
+};
+
 int getConection(struct conectionInfo *);
-MYSQL_ROW getSome(struct conectionInfo *, char*, int);
+struct filaSelect* getSome(struct conectionInfo *, char*);
 struct conectionInfo * setInfo(char*, char*, char*, char*);
 int login_add_User(struct conectionInfo *, char* , char*, char*);
 

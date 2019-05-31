@@ -95,7 +95,7 @@ void *funcHiloCliente(void * clientConect){
       if(optionUser == 3 || optionUser < 0){
         break;
       }
-      resolverPeticion(myCliente, optionUser); //Se atiende la peticion del user
+      resolverPeticionMenuPrin(myCliente, optionUser); //Se atiende la peticion del user
       sleep(1);
   }
   printf("El cliene %d se ha desconectado. \n",myCliente->connfd);
@@ -106,17 +106,36 @@ void *funcHiloCliente(void * clientConect){
 
 }
 
-void resolverPeticion(struct clientConect * myCliente, int option){
+////////////////////////////////////////////////////////////////////////////////////////////
+void resolverPeticionMenuPrin(struct clientConect * myCliente, int option){
   switch (option){
       case 1:
-          login(myCliente);
+          if(login(myCliente))
+            userMenu(myCliente);//llama al que espera las respuestas de login user
           break;
       case 2:
+          newUser(myCliente);
           break;
       default:
+          printf("Saliendo del juego\n");
           break;
   }
+}
 
+int newUser(struct clientConect * myCliente){
+  char nombreUser[120];
+  char pass[120];
+  //Se espera el nombre del usuario
+  getDataUserString(myCliente,&nombreUser);
+  //Se espera la contrasena
+  getDataUserString(myCliente,&pass);
+  printf("Nombre es: %s pass es: %s\n", nombreUser,pass );
+  struct conectionInfo * myConector = setInfo("localhost","malexander","Usuario.1", "JUEGODB");
+  int resp = login_add_User(myConector,nombreUser,pass,"call create_user(?, ?);");
+  printf("EL usuario : %d \n", resp);
+  //se le manda la respuesta al CLIENTE
+  send(myCliente->connfd, &resp, sizeof(&resp), 0 );
+  return resp;
 }
 
 int login(struct clientConect * myCliente){
@@ -126,13 +145,89 @@ int login(struct clientConect * myCliente){
   getDataUserString(myCliente,&nombreUser);
   //Se espera la contrasena
   getDataUserString(myCliente,&pass);
-  printf("NOmbre es: %s pass es: %s\n", nombreUser,pass );
+  printf("Nombre es: %s pass es: %s\n", nombreUser,pass );
   struct conectionInfo * myConector = setInfo("localhost","malexander","Usuario.1", "JUEGODB");
   int resp = login_add_User(myConector,nombreUser,pass,"call validate_login(?, ?);");
   printf("EL usuario : %d \n", resp);
   //se le manda la respuesta al CLIENTE
   send(myCliente->connfd, &resp, sizeof(&resp), 0 );
+  return resp;
 }
+////////////////////////////////////////////////////////////////////////////////////////////
+void userMenu(struct clientConect * myCliente){
+  //Sabemos que puede estamos logeado
+  int optionUser = 0;
+  int resultado = 1;
+  while(resultado > 0){
+    resultado = getDataUserInt(myCliente, &optionUser);
+    optionUser = optionUser - 48;
+    printf("User es: %d _ La opcion del user es en USERMENU: %d \n",myCliente->connfd,optionUser);
+    resolverPeticionMenuUser(myCliente,optionUser);
+    if(optionUser == 3 || optionUser < 0){
+      break;
+    }
+  }
+}
+
+void resolverPeticionMenuUser(struct clientConect * myCliente, int option){
+  switch (option){
+      case 1:
+          newGame(myCliente);//llama al que espera las respuestas de login user
+          break;
+      case 2:
+          printf("Opcion continuar JUego\n");//Continuar juego
+          break;
+      default:
+          printf("Saliendo menu Principal\n");//Continuar juego
+          break;
+  }
+}
+
+void newGame(struct clientConect * myCliente){
+  int optionUser = 0;
+  int resultado = 1;
+  while(resultado > 0){
+    resultado = getDataUserInt(myCliente, &optionUser);
+    optionUser = optionUser - 48;
+    printf("User es: %d _ La opcion del user es en newGAME: %d \n",myCliente->connfd,optionUser);
+    resolverPeticionMenuNewGame(myCliente,optionUser);
+    if(optionUser == 3 || optionUser < 0){
+      break;
+    }
+  }
+}
+
+void resolverPeticionMenuNewGame(struct clientConect * myCliente, int option){
+  switch (option){
+      case 1:
+          sendUsers(myCliente);//muestra los usuarios para un juego
+          break;
+      case 2: //empezar Juego
+          printf("Opcion EMpezar JUego\n");
+          break;
+      case 3: //
+          printf("Opcion Regresar Menu User\n");
+          break;
+      default:
+          break;
+  }
+}
+
+void sendUsers(struct clientConect * myCliente){
+  struct conectionInfo * myConector = setInfo("localhost","malexander","Usuario.1", "JUEGODB");
+  struct filaSelect* filauser = getSome(myConector,"call get_users()");
+  //manda la cantidad usuarios//printf("NUm de user %d", filauser->filas);
+  send(myCliente->connfd, &filauser->filas, sizeof(&filauser->filas), 0 );
+  //manda los nombres de los usuarios y su id
+  int i;
+  for(i = 0; i < filauser->filas; i++){
+    sendDataUser(myCliente,filauser->fila_result[i]);
+    sleep(1);
+  }
+
+  printf("Mando a los usuarios\n");
+}
+////////////////////////////////////////////////////////////////////////////////////////////
 
 void sendDataUser(struct clientConect * myCliente, char* mensaje){
   int len = strlen(mensaje);
@@ -145,7 +240,6 @@ void sendDataUser(struct clientConect * myCliente, char* mensaje){
   printf("Se logro mandar el mensaje\n");
 }
 
-
 int getDataUserString(struct clientConect * myCliente, void *buffer){
   bzero(buffer, sizeof(buffer)); //limpia el buffer
   int resultado = 1; //= read(myCliente->connfd,buffer,sizeof(buffer));
@@ -153,11 +247,9 @@ int getDataUserString(struct clientConect * myCliente, void *buffer){
   while(resultado > 0 && total < 120){
     resultado = read(myCliente->connfd,buffer,sizeof(buffer));
     buffer += resultado;
-    total += resultado;
-    //printf("Leo %d total: %d\n", resultado, total);
+    total += resultado;//printf("Leo %d total: %d\n", resultado, total);
   }
-  resultado = 0;
-  //printf("Salgo de la lectura\n");
+  resultado = 0;//printf("Salgo de la lectura\n");
   return resultado;
 }
 

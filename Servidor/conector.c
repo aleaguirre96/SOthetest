@@ -22,9 +22,10 @@ int getConection(struct conectionInfo * Myconector){
   return error;
 }
 
-MYSQL_ROW getSome(struct conectionInfo * Myconector, char* callProce, int numColumnas){
+struct filaSelect* getSome(struct conectionInfo * Myconector, char* callProce){
   MYSQL_RES *resultado;
   MYSQL_ROW fila_result;
+  struct filaSelect* tmp = malloc(sizeof(struct filaSelect));
   getConection(Myconector);
   //ejecutar una llamada de procedimientos a la database
   char* procedimiento = callProce;
@@ -33,17 +34,23 @@ MYSQL_ROW getSome(struct conectionInfo * Myconector, char* callProce, int numCol
     printf("Ocurrio un error al ejecutar el procedimiento");
   }else{
     resultado = mysql_store_result(Myconector->connection);
+    tmp->filas = (int) mysql_num_rows(resultado);
+    int i = 0;
   while((fila_result = mysql_fetch_row(resultado))) {
-  //                printf("ID: %s  User: %s Pass: %s\n", fila_result[0], fila_result[1],fila_result[2]);
-   }
+      tmp->fila_result[i] = fila_result[1];
+      //printf("ID: %s  User: %s Pass: %s\n", fila_result[0], fila_result[1],fila_result[2]);
+      i++;
+  }
     mysql_free_result(resultado);
     mysql_close(Myconector->connection);
   }
-  return fila_result;
+
+  return tmp;
 }
 
 int login_add_User(struct conectionInfo * Myconector, char* UserName,char* Pass, char* callProce){
   getConection(Myconector);
+  printf("ESte es el nombre %s \n", UserName);
   int status = 1;
   Myconector->stmt = mysql_stmt_init(Myconector->connection);
   if (!Myconector->stmt){

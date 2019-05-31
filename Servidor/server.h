@@ -33,9 +33,13 @@ void *funcHiloEscucharClientes(void * );
 void sendDataUser(struct clientConect *, char*);
 int getDataUserString(struct clientConect *, void*);
 int getDataUserInt(struct clientConect *, void*);
-void resolverPeticion(struct clientConect *, int);
-void jugar(struct clientConect * );
+void resolverPeticionMenuPrin(struct clientConect * myCliente, int option);
 int login(struct clientConect * myCliente);
-
+void userMenu(struct clientConect * myCliente);
+void resolverPeticionMenuUser(struct clientConect * myCliente, int option);
+void newGame(struct clientConect * myCliente);
+void resolverPeticionMenuNewGame(struct clientConect * myCliente, int option);
+void sendUsers(struct clientConect * myCliente);
+int newUser(struct clientConect * myCliente);
 
 #endif

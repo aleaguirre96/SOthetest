@@ -31,14 +31,14 @@ CREATE PROCEDURE validate_login(IN pUSERNAME VARCHAR(50),IN pPASS VARCHAR(50))
 		FROM JUGADOR
 		WHERE USERNAME= pUSERNAME AND PASS = pPASS;
 
-		IF(qEncontrado != 1) THEN
+		IF(qEncontrado = 0) THEN
            SIGNAL SQLSTATE '45000'
            SET MESSAGE_TEXT = 'Contrasena o clave no valida';
 		END IF;
 	END//
 DELIMITER ;
 
-call validate_login("joseA","1234");
+call validate_login("jsss","1234");
 
 
 
