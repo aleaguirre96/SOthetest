@@ -111,17 +111,21 @@ def comenzarPartida(server):
 
 def printJuegadores(server, nameUser):
     server.send('1'.encode('utf-8'))#1.newGame 1.1 Get Users
-    print("▒ Los jugadores para una nueva partida son: ")
     validate = server.recv(120)#Se espera la respuesta de cuantos usuarios hay
     num = int.from_bytes(validate[0:1],byteorder='big')
-    printJugadores_aux(server,num)
+    printJugadores_aux(server,nameUser,num)
 
-def printJugadores_aux(server,lenUsers):
+def printJugadores_aux(server,nameUser,lenUsers):
     lista = []
-    for i in range(1, lenUsers):
+    cont = 0
+    print("▒ Los jugadores para una nueva partida son: ")
+    while cont < lenUsers:
         data = server.recv(120).decode()
         lista.append(data)
-    print(lista)
+        if(data != nameUser):
+            print("╠»%d» %s" %(cont,lista[cont]))
+        cont+=1
+    return lista
 
 
 # ////////////////////////////////////////////////////////////////////////////////////////////////
