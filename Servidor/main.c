@@ -2,8 +2,7 @@
 #include "game.h"
 #include "conector.h"
 //Para ejecutar el programa se usa el comando
-//gcc -Wall -fno-stack-protector game.c server.c main.c -o main -lpthread $(mysql_config --cflags) conector.c $(mysql_config --libs)
-
+//gcc game.c server.c main.c -o main -lpthread $(mysql_config --cflags) conector.c $(mysql_config --libs)
 
 int main()
 {
