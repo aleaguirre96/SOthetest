@@ -1,4 +1,5 @@
 #include "server.h"
+#include "conector.h"
 
 //Este procedimiento crea el soket de una estructura servidor
 void inicializarPuerto(struct servidor * pServer){
@@ -45,6 +46,7 @@ void aceptUsers(struct servidor *pServer){ //Esto es un hilo aparte?
     struct clientConect * myCliente = malloc(sizeof(struct clientConect));
     int sizeClientAddr = sizeof(myCliente->clientaddr);
     myCliente->connfd = accept(pServer->sockfd, (struct sockaddr*)&myCliente->clientaddr,&sizeClientAddr); //archivo de socket para el cliente
+    printf("CLIENTE %d \n",myCliente->connfd);
     if (myCliente->connfd < 0) {
         printf("Server acccept failed...\n");
         free(myCliente); //libera los recursos de myCliente
@@ -54,6 +56,7 @@ void aceptUsers(struct servidor *pServer){ //Esto es un hilo aparte?
         pthread_create(&hiloCliente, 0,funcHiloCliente , (void *) myCliente);
         pthread_detach(hiloCliente);
     }
+    sleep(1);
   }
 }
 
@@ -81,32 +84,57 @@ void *funcHiloCliente(void * clientConect){
   struct clientConect * myCliente;
   if (!clientConect) pthread_exit(0); //Si es nula el puntero del cliente sale;
   myCliente = (struct clientConect *)clientConect; //hace el cast del parametro
-  char *mensaje= "1234567890";
-  sendDataUser(myCliente,mensaje);
+  char *mensaje= " » » Bienvenido al Juego The Test. « « ";
   int optionUser = 0;
-  int resultado = getDataUser(myCliente, &optionUser);
+  int resultado = 1;
+  sendDataUser(myCliente,mensaje);
   while(resultado > 0){
-      printf("User es: %d _ La opcion del user es: %d",myCliente->connfd,optionUser);
-      resultado = getDataUser(myCliente, &optionUser);
-      if(optionUser == 3)
+      resultado = getDataUserInt(myCliente, &optionUser);
+      optionUser = optionUser - 48;
+      printf("User es: %d _ La opcion del user es: %d \n",myCliente->connfd,optionUser);
+      if(optionUser == 3 || optionUser < 0){
         break;
+      }
+      resolverPeticion(myCliente, optionUser); //Se atiende la peticion del user
       sleep(1);
   }
   printf("El cliene %d se ha desconectado. \n",myCliente->connfd);
   close(myCliente->connfd);
   free(myCliente);
+
   pthread_exit(0);
+
 }
 
-void resolverPeticion(struct clientConect * myCliente){
-  char* userOption;
-  //getDataUser(myCliente,&userOption);
-  //printf("La opcion %s ", userOption);
+void resolverPeticion(struct clientConect * myCliente, int option){
+  switch (option){
+      case 1:
+          login(myCliente);
+          break;
+      case 2:
+          break;
+      default:
+          break;
+  }
+
+}
+
+int login(struct clientConect * myCliente){
+  char nombreUser[120];
+  char pass[120];
+  //Se espera el nombre del usuario
+  getDataUserString(myCliente,&nombreUser);
+  //Se espera la contrasena
+  getDataUserString(myCliente,&pass);
+  printf("NOmbre es: %s pass es: %s\n", nombreUser,pass );
+  struct conectionInfo * myConector = setInfo("localhost","malexander","Usuario.1", "JUEGODB");
+  int resp = login_add_User(myConector,nombreUser,pass,"call validate_login(?, ?);");
+  printf("EL usuario : %d \n", resp);
+  //se le manda la respuesta al CLIENTE
+  send(myCliente->connfd, &resp, sizeof(&resp), 0 );
 }
 
 void sendDataUser(struct clientConect * myCliente, char* mensaje){
-  //write(myCliente->connfd, mensaje, strlen(mensaje));
-  //send(myCliente->connfd, mensaje, strlen(mensaje),0);
   int len = strlen(mensaje);
   size_t total = 0;
   while ( total != len ) {
@@ -114,13 +142,29 @@ void sendDataUser(struct clientConect * myCliente, char* mensaje){
     if ( nb == -1 ) printf( "send failed \n" );
     total += nb;
   }
-  printf("Se logro mandar el mensaje");
+  printf("Se logro mandar el mensaje\n");
 }
 
-int getDataUser(struct clientConect * myCliente, void *buffer){
+
+int getDataUserString(struct clientConect * myCliente, void *buffer){
   bzero(buffer, sizeof(buffer)); //limpia el buffer
-  int tmp = read(myCliente->connfd,buffer , sizeof(buffer));
-  return tmp;
+  int resultado = 1; //= read(myCliente->connfd,buffer,sizeof(buffer));
+  int total = 0;
+  while(resultado > 0 && total < 120){
+    resultado = read(myCliente->connfd,buffer,sizeof(buffer));
+    buffer += resultado;
+    total += resultado;
+    //printf("Leo %d total: %d\n", resultado, total);
+  }
+  resultado = 0;
+  //printf("Salgo de la lectura\n");
+  return resultado;
+}
+
+int getDataUserInt(struct clientConect * myCliente, void*buffer){
+  bzero(buffer, sizeof(buffer)); //limpia el buffer
+  int resultado = read(myCliente->connfd,buffer,sizeof(buffer));
+  return resultado;
 }
 
 /*

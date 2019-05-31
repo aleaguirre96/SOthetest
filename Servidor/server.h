@@ -31,10 +31,11 @@ void aceptUsers(struct servidor *);
 void *funcHiloCliente(void * );
 void *funcHiloEscucharClientes(void * );
 void sendDataUser(struct clientConect *, char*);
-//void sendDataUser(struct clientConect * myCliente, char mensaje[]);
-int getDataUser(struct clientConect *, void*);
-void resolverPeticion(struct clientConect *);
+int getDataUserString(struct clientConect *, void*);
+int getDataUserInt(struct clientConect *, void*);
+void resolverPeticion(struct clientConect *, int);
 void jugar(struct clientConect * );
+int login(struct clientConect * myCliente);
 
 
 #endif
