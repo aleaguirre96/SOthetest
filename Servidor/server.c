@@ -1,5 +1,5 @@
 #include "server.h"
-#include "conector.h"
+
 
 //Este procedimiento crea el soket de una estructura servidor
 void inicializarPuerto(struct servidor * pServer){
@@ -203,7 +203,7 @@ void resolverPeticionMenuNewGame(struct clientConect * myCliente, int option){
           sendUsers(myCliente);//muestra los usuarios para un juego
           break;
       case 2: //empezar Juego
-          printf("Opcion EMpezar JUego\n");
+          startNewGame(myCliente);
           break;
       case 3: //
           printf("Opcion Regresar Menu User\n");
@@ -213,18 +213,62 @@ void resolverPeticionMenuNewGame(struct clientConect * myCliente, int option){
   }
 }
 
+void startNewGame(struct clientConect * myCliente){//representa el turno 1 del juego
+  struct conectionInfo * myConector = setInfo("localhost","malexander","Usuario.1", "JUEGODB");
+  char userNameA[120];
+  //Se espera el nombre del usuario
+  getDataUserString(myCliente,&userNameA);
+  char userNameB[120];
+  //Se espera el nombre del usuario
+  getDataUserString(myCliente,&userNameB);
+  printf("User para nuevo Juego A: %s B: %s \n",userNameA,userNameB);
+  //Pedir preguntas
+  struct pregunta *arrayPreg[5];
+  getSomeQuestions(myConector,arrayPreg);
+  //Mandar preguntas /Pedir respuestas
+  sendQuest(myCliente, arrayPreg);
+  //Guardar en la base
+}
+void sendQuest(struct clientConect * myCliente, struct pregunta *arrayPreg[5]){
+  //manda los textos de las preguntass
+  int i;
+  int resp[5];
+  for(i = 0; i < 5; i++){
+    printf("Mandando pregunta %d \n", i);
+    //send(myCliente->connfd, &arrayPreg[i]->idP, sizeof(&arrayPreg[i]->idP), 0 );//id de pregunta
+    sendDataUser(myCliente,"pr");
+    sleep(1);
+    sendDataUser(myCliente,arrayPreg[i]->preguntaText1);
+    sleep(1);
+    sendDataUser(myCliente,arrayPreg[i]->preguntaText2);
+    sleep(1);
+    sendDataUser(myCliente,arrayPreg[i]->preguntaText3);
+    sleep(1);
+    sendDataUser(myCliente,arrayPreg[i]->preguntaText4);
+    sleep(1);
+    printf("Pregunta mandada\n");
+    sendDataUser(myCliente,"ru");
+    getDataUserInt(myCliente, &resp[i]);
+    printf("Respuesta recibida\n");
+    sleep(1);
+ }
+ sendDataUser(myCliente,"eq");//acaba de mandar las pregntas
+ printf("Resp 1:%d 2:%d 3:%d 4:%d 5:%d",resp[0],resp[1],resp[2],resp[3],resp[4]);
+}
+
 void sendUsers(struct clientConect * myCliente){
   struct conectionInfo * myConector = setInfo("localhost","malexander","Usuario.1", "JUEGODB");
   struct filaSelect* filauser = getSome(myConector,"call get_users()");
   //manda la cantidad usuarios//printf("NUm de user %d", filauser->filas);
   send(myCliente->connfd, &filauser->filas, sizeof(&filauser->filas), 0 );
   //manda los nombres de los usuarios y su id
+  sleep(1);
   int i;
   for(i = 0; i < filauser->filas; i++){
     sendDataUser(myCliente,filauser->fila_result[i]);
     sleep(1);
   }
-
+  sendDataUser(myCliente,"ec");
   printf("Mando a los usuarios\n");
 }
 ////////////////////////////////////////////////////////////////////////////////////////////

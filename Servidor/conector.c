@@ -44,8 +44,36 @@ struct filaSelect* getSome(struct conectionInfo * Myconector, char* callProce){
     mysql_free_result(resultado);
     mysql_close(Myconector->connection);
   }
-
   return tmp;
+}
+
+void getSomeQuestions(struct conectionInfo * Myconector, struct pregunta *pregu[5]){
+  MYSQL_RES *resultado;
+  MYSQL_ROW fila_result;
+  getConection(Myconector);
+  //ejecutar una llamada de procedimientos a la database
+  char* procedimiento = "call getFiveQ();";
+  int execute = mysql_real_query(Myconector->connection, procedimiento, strlen(procedimiento));
+  if(execute){
+    printf("Ocurrio un error al ejecutar el procedimiento");
+  }else{
+    resultado = mysql_store_result(Myconector->connection);
+    int i = 0;
+  while((fila_result = mysql_fetch_row(resultado))) {
+      pregu[i] = malloc(sizeof(struct  pregunta));
+      printf("Llego aca\n");
+      char* preguntaTexttmp[4] = { fila_result[1], fila_result[2], fila_result[3], fila_result[4]};
+      int idP = atoi(fila_result[0]);
+      pregu[i]->idP = idP;
+      strcpy(pregu[i]->preguntaText1, preguntaTexttmp[0]);
+      strcpy(pregu[i]->preguntaText2, preguntaTexttmp[1]);
+      strcpy(pregu[i]->preguntaText3, preguntaTexttmp[2]);
+      strcpy(pregu[i]->preguntaText4, preguntaTexttmp[3]);
+      i++;
+  }
+    mysql_free_result(resultado);
+    mysql_close(Myconector->connection);
+  }
 }
 
 int login_add_User(struct conectionInfo * Myconector, char* UserName,char* Pass, char* callProce){

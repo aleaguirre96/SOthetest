@@ -5,7 +5,8 @@ titulo = "   ╔═════════════════════�
 menuInicial = "╔═════════════════════════════════╗\n   Menu Inicial \n » 1-Login.\n » 2-Nuevo User.\n » 3-Salir\n╚═════════════════════════════════╝\n"
 menuUser = "╔═════════════════════════════════╗\n   Menu User \n » 1-New Game. \n » 2-Continuar Partida\n » 3-Salir\n╚═════════════════════════════════╝\n"
 menuNewGame = "╔═════════════════════════════════╗\n   Menu NewGame \n » 1-Listar Usuarios. \n » 2-Empezar a Jugar\n » 3-Salir\n╚═════════════════════════════════╝\n"
-
+menJuego = "▓▓▓▒▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░\n▓▓▓▒▒░░░ THE TEST "
+menJugadores = "▓╔═════════════════════════════════════════════════════════════════════════\n▓╠Los jugadores para una nueva partida son: \n▓╚═╗"
 
 def conect(host, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -93,38 +94,76 @@ def peticionUserSesion(option, server, name):
 def newGame(server, name):
     server.send('1'.encode('utf-8')) #le avisamos al servidor que la opcion del usuer es 1
     option = 0
+    listaUse = []
     while option != 3:
         option = menuPrint(server,menuNewGame)
-        peticionNewGame(option, server, name)
+        listaUse = peticionNewGame(option, server, name, listaUse)
 
-def peticionNewGame(option, server, name):
+def peticionNewGame(option, server, name, listaUse):
     if(option == 1):
-        printJuegadores(server, name)
+        listaUse = []
+        listaUse = printJuegadores(server, name)
     elif(option == 2):
-        comenzarPartida(server)
-        print("▒╬» Comenzar Partida ")
+        comenzarPartida(server, name, listaUse)
     else:
         server.send('3'.encode('utf-8'))#1.newGame 1.1 Get Users
+    return listaUse
 
-def comenzarPartida(server):
-    server.send('2'.encode('utf-8'))#1.newGame 1.1 Get Users
+def comenzarPartida(server, name, listaUse):
+    if(listaUse != []):
+        server.send('2'.encode('utf-8'))#1.newGame 1.2 Get UsersComenzarPartida
+        #mandar mi nombre
+        mysend(name, server)
+        #mandar el nombre del userB
+        userPosB = int(input ("▓╠» Digite el id del User:"))
+        mysend(str(listaUse[userPosB]), server)
+        printQuestion(server)
+    else:
+        print("▓╠» Cargue los usuarios primero")
+
+def printQuestion(server):
+    data = server.recv(120).decode('utf-8', 'ignore')#id de la pregunta
+    print(menJuego)
+    preg = 0
+    resp = 0
+    while data != "eq": #dado el caso que
+        if(data == "pr"):#la proxima es el texto de pregunta
+            preg =preg+1
+            resp = 0
+            data = server.recv(120).decode('utf-8', 'ignore')
+            print("▓▒╬══════════════════════════════════════════════════════════════════════════")
+            print("▓▒╔»Preg"+ str(preg)+": "+str(repr(data)))
+        elif(data == "ru"):
+            userResp = int(input("▓▒╚Mi respuesta es:"))
+            server.send(str(userResp).encode('utf-8'))#1.newGame 1.1 Get Users
+        else:
+            resp = resp +1
+            print("▓▒╠══»Resp"+str(resp)+": "+str(repr(data)))
+        data = server.recv(120).decode('utf-8', 'ignore')
+
+
+
 
 def printJuegadores(server, nameUser):
     server.send('1'.encode('utf-8'))#1.newGame 1.1 Get Users
     validate = server.recv(120)#Se espera la respuesta de cuantos usuarios hay
     num = int.from_bytes(validate[0:1],byteorder='big')
-    printJugadores_aux(server,nameUser,num)
+    return printJugadores_aux(server,nameUser,num)
 
 def printJugadores_aux(server,nameUser,lenUsers):
     lista = []
-    cont = 0
-    print("▒ Los jugadores para una nueva partida son: ")
-    while cont < lenUsers:
-        data = server.recv(120).decode()
+    print(menJugadores)
+    data = server.recv(120).decode()
+    while data != "ec":
         lista.append(data)
-        if(data != nameUser):
-            print("╠»%d» %s" %(cont,lista[cont]))
-        cont+=1
+        data = server.recv(120).decode()
+
+    cont = 0
+    for user in lista:
+        if(user != nameUser):
+            print("▓▒▒╠»%d» %s" %(cont,user))
+        cont=cont + 1
+
     return lista
 
 

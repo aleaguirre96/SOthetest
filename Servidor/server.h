@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "game.h"
+#include "conector.h"
 
 struct servidor {
   int sockfd; //archivo de socket
@@ -41,5 +41,7 @@ void newGame(struct clientConect * myCliente);
 void resolverPeticionMenuNewGame(struct clientConect * myCliente, int option);
 void sendUsers(struct clientConect * myCliente);
 int newUser(struct clientConect * myCliente);
+void startNewGame(struct clientConect * myCliente);
+void sendQuest(struct clientConect * myCliente, struct pregunta *arrayPreg[5]);
 
 #endif
