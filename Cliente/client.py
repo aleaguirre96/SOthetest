@@ -7,6 +7,7 @@ menuUser = "╔═════════════════════�
 menuNewGame = "╔═════════════════════════════════╗\n   Menu NewGame \n » 1-Listar Usuarios. \n » 2-Empezar a Jugar\n » 3-Salir\n╚═════════════════════════════════╝\n"
 menJuego = "▓▓▓▒▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░\n▓▓▓▒▒░░░ THE TEST "
 menJugadores = "▓╔═════════════════════════════════════════════════════════════════════════\n▓╠Los jugadores para una nueva partida son: \n▓╚═╗"
+menuContinuarP = "╔═════════════════════════════════╗\n   Menu Continuar Partida \n » 1-Listar mis Partidas. \n » 2-Jugar mi turno\n » 3-Salir\n╚═════════════════════════════════╝\n"
 
 def conect(host, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -86,9 +87,33 @@ def peticionUserSesion(option, server, name):
         newGame(server, name)
     elif(option == 2):
         print("▒╬» Continuar Partida ")
+        partidasUser(server,name)
+    else:
+        server.send('3'.encode('utf-8'))#1.newGame 1.1 Get Users
+# ////////////////////////////////////////////////////////////////////////////////////////////////
+#2.Partidas 2.1Get Partidas 2.Continuar Partida 3.Salir
+def partidasUser(server, name):
+    server.send('2'.encode('utf-8')) #le avisamos al servidor que la opcion del usuer es 1
+    option = 0
+    listaUse = []
+    while option != 3:
+        option = menuPrint(server,menuContinuarP)
+        listaUse = peticionPartidas(option, server, name, listaUse)
+
+def peticionPartidas(option, server, name, listaUse):
+    if(option == 1):
+        ##printPartidas(server, name)
+        server.send('1'.encode('utf-8'))
+        mysend(name, server)
+    elif(option == 2):
+        ##continuarPartida(server, name, listaUse)
         server.send('2'.encode('utf-8'))
     else:
         server.send('3'.encode('utf-8'))#1.newGame 1.1 Get Users
+    return listaUse
+
+
+
 # ////////////////////////////////////////////////////////////////////////////////////////////////
 #1.newGame 1.1Get User 2.Start Game 3.Salir
 def newGame(server, name):
@@ -117,11 +142,11 @@ def comenzarPartida(server, name, listaUse):
         #mandar el nombre del userB
         userPosB = int(input ("▓╠» Digite el id del User:"))
         mysend(str(listaUse[userPosB]), server)
-        printQuestion(server)
+        startNewGame(server)
     else:
         print("▓╠» Cargue los usuarios primero")
 
-def printQuestion(server):
+def startNewGame(server):
     data = server.recv(120).decode('utf-8', 'ignore')#id de la pregunta
     print(menJuego)
     preg = 0
@@ -131,15 +156,19 @@ def printQuestion(server):
             preg =preg+1
             resp = 0
             data = server.recv(120).decode('utf-8', 'ignore')
-            print("▓▒╬══════════════════════════════════════════════════════════════════════════")
-            print("▓▒╔»Preg"+ str(preg)+": "+str(repr(data)))
+            print("▓▒═╦══════════════════════════════════════════════════════════════════════════")
+            print("▓▒╔╝Preg"+ str(preg)+": "+str(repr(data)))
         elif(data == "ru"):
-            userResp = int(input("▓▒╚Mi respuesta es:"))
+            userResp = int(input("▓▒╚══════■ Mi respuesta es:"))
             server.send(str(userResp).encode('utf-8'))#1.newGame 1.1 Get Users
         else:
             resp = resp +1
             print("▓▒╠══»Resp"+str(resp)+": "+str(repr(data)))
-        data = server.recv(120).decode('utf-8', 'ignore')
+    data = server.recv(120).decode('utf-8', 'ignore')
+    if(data == "sg"):
+        print("▓╠»Partida Guardada, espera tu turno....")
+    else:
+        print("▓╠»No se pudo guardar la partida.")
 
 
 
@@ -177,17 +206,4 @@ def menuPrint(server, mensaje):
   optionUser = int(input ("▓╠» Digite una opcion:"))
   return optionUser
 
-#data = s.recv(1024)
-#HOST = '192.168.0.25'  # The server's hostname or IP address
-#PORT = 50000        # The port used by the server
-
-#msg ='1234567890123'
-##s.sendall(msg.encode('utf-8'))
-#mysend(msg,s)
-#print("Mandado el mensaje")
-#data = s.recv(120)
-#print('Received', repr(data))
-#s.send('3'.encode('utf-8'))
-
-#s.close()
 main()

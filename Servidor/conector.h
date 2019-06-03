@@ -25,6 +25,7 @@ struct pregunta{
 
 struct filaSelect{
   char* fila_result[120];
+  char fila_resultb[50];
   int filas;
 };
 
@@ -33,5 +34,8 @@ struct filaSelect* getSome(struct conectionInfo *, char*);
 struct conectionInfo * setInfo(char*, char*, char*, char*);
 int login_add_User(struct conectionInfo *, char* , char*, char*);
 void getSomeQuestions(struct conectionInfo * Myconector, struct pregunta *pregu[5]);
+int newPartidaDataBase(struct conectionInfo * Myconector,char* UserNameA,char* UserNameB);
+int setPrimerRonda(struct conectionInfo * Myconector,int parametros[13] );
+struct filaSelect* getPartidas(struct conectionInfo * Myconector, char* userName);
 
 #endif

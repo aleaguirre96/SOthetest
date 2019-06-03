@@ -8,12 +8,6 @@ CREATE PROCEDURE create_user(IN pUSERNAME VARCHAR(50),IN pPASS VARCHAR(50))
 	END//
 DELIMITER ;
 
-CALL create_user("jose","1234");
-CALL create_user("mons","1234");
-CALL create_user("use1","1234");
-CALL create_user("use2","1234");
-CALL create_user("use3","1234");
-CALL create_user("use4","1234");
 DELIMITER //
 CREATE PROCEDURE get_users()
 	BEGIN
@@ -40,21 +34,87 @@ CREATE PROCEDURE validate_login(IN pUSERNAME VARCHAR(50),IN pPASS VARCHAR(50))
 	END//
 DELIMITER ;
 
-call validate_login("jsss","1234");
-
-
-
 
 DELIMITER //
-CREATE PROCEDURE create_partida(IN pidA INT, IN pidB INT, OUT pidPart INT)
+CREATE PROCEDURE getId(IN pUSERNAME VARCHAR(50),OUT IDUSER INT)
 	BEGIN
-		INSERT INTO PARTIDA(ID_JUGADORA, ID_JUGADORB, PUNTAJE, FINALIZADA)
-		VALUES(pidA, pidB, 0, 0);
-        SET pidPart = LAST_INSERT_ID();
+		SELECT ID_JUGADOR
+		INTO IDUSER
+		FROM JUGADOR
+		WHERE USERNAME= pUSERNAME;
 	END//
 DELIMITER ;
 
+DELIMITER //
+CREATE PROCEDURE create_partida(IN pUSERNAMEA VARCHAR(50), IN pUSERNAMEB VARCHAR(50))
+    BEGIN
+        DECLARE pidA INT;DECLARE pidB INT;
+        call getId(pUSERNAMEA, pidA);
+        call getId(pUSERNAMEB, pidB);
+		INSERT INTO PARTIDA(ID_JUGADORA, ID_JUGADORB, PUNTAJE, FINALIZADA)
+		VALUES(pidA, pidB, 0, 0);
+        
+        SELECT LAST_INSERT_ID();
+	END//
+DELIMITER ;
 
+DELIMITER //
+CREATE PROCEDURE setResPrRonda(IN idpartida INT, IN idRonda INT,IN jugador INT,  
+IN idP INT,IN resp INT)
+	BEGIN
+    if (jugador = 1) then
+      INSERT INTO RESPUESTA(ID_PARTIDA, ID_RONDA, ID_PREGUNTA, JUGADORA_RESP, JUGADORB_RESP)
+	  VALUES(idpartida, idRonda,idP,resp,0);
+	else 
+	  INSERT INTO RESPUESTA(ID_PARTIDA, ID_RONDA, ID_PREGUNTA, JUGADORA_RESP, JUGADORB_RESP)
+	  VALUES(idpartida, idRonda,idP,0,resp);
+    end if;
+	END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE setRonda(IN idpartida INT,IN numRonda INT ,IN jugador INT,  
+IN idP1 INT,IN idP2 INT, IN idP3 INT, IN idP4 INT, IN idP5 INT,
+IN r1 INT, IN r2 INT, IN r3 INT, IN r4 INT, IN r5 INT)
+	BEGIN
+      DECLARE idRonda INT; DECLARE turnAct INT;
+      if(jugador = 1 ) then
+         SET turnAct = 2;
+	  else
+         SET turnAct = 1;
+      end if;
+      
+      INSERT INTO  RONDA(ID_PARTIDA, RONDA, TURNO_ACT)
+	  VALUES(idpartida, numRonda, turnAct);
+      SET idRonda = LAST_INSERT_ID(); 
+      
+      call setResPrRonda(idpartida, idRonda, jugador, idP1,r1);
+      call setResPrRonda(idpartida, idRonda, jugador, idP2,r2);
+      call setResPrRonda(idpartida, idRonda, jugador, idP3,r3);
+      call setResPrRonda(idpartida, idRonda, jugador, idP4,r4);
+      call setResPrRonda(idpartida, idRonda, jugador, idP5,r5);
+	END //
+DELIMITER ;
+#SELECT * FROM RONDA
+#call set_primerRonda(1,1,1,2,3,4,5,2,2,2,2,2)
+#select * from RESPUESTA
+
+DELIMITER //
+CREATE PROCEDURE getPartidas(IN pUSERNAME VARCHAR(50))
+BEGIN
+  SELECT ID_PARTIDA, jb.USERNAME
+  FROM  PARTIDA AS p INNER JOIN JUGADOR AS j on j.ID_JUGADOR = p.ID_JUGADORA
+  INNER JOIN JUGADOR AS jb ON jb.ID_JUGADOR = p.ID_JUGADORB
+  WHERE p.FINALIZADA = 0 AND j.USERNAME = pUSERNAME
+  UNION
+  SELECT ID_PARTIDA, jb.USERNAME
+  FROM  PARTIDA AS p INNER JOIN JUGADOR AS j on j.ID_JUGADOR = p.ID_JUGADORB
+  INNER JOIN JUGADOR AS jb ON jb.ID_JUGADOR = p.ID_JUGADORA
+  WHERE p.FINALIZADA = 0 AND j.USERNAME = pUSERNAME;
+  END //
+DELIMITER ;
+
+call getPartidas('jose\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0');
 
 DELIMITER //
 CREATE PROCEDURE partidafin(IN pidpartida INT)
@@ -71,13 +131,6 @@ CREATE PROCEDURE setpuntaje(IN pidpartida INT, IN nuevopuntaje INT)
      WHERE ID_PARTIDA = pidpartida;
 	END//
 DELIMITER ;
-
-
-
-call partidafin(1);
-call setpuntaje(1, 40);
-select * from PARTIDA;
-
 
 DELIMITER //
 CREATE PROCEDURE create_pregunta(IN ptext VARCHAR(200), IN prep1 VARCHAR(200),
@@ -121,5 +174,4 @@ CREATE PROCEDURE getFiveQ()
 	LIMIT 5;
 	END//
 DELIMITER ;
-call getFiveQ();
 call getFiveQ();

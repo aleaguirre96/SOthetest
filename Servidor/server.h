@@ -42,6 +42,11 @@ void resolverPeticionMenuNewGame(struct clientConect * myCliente, int option);
 void sendUsers(struct clientConect * myCliente);
 int newUser(struct clientConect * myCliente);
 void startNewGame(struct clientConect * myCliente);
-void sendQuest(struct clientConect * myCliente, struct pregunta *arrayPreg[5]);
+void sendQuest(struct clientConect * myCliente, struct pregunta *arrayPreg[5], int  resp[5]);
+void setNGameDataBase(struct clientConect * myCliente, struct conectionInfo * Myconector, struct pregunta *arrayPreg[5], int resp[5],int idPartida);
+
+void partidasUser(struct clientConect * myCliente);
+void resolverPeticionMenuPartidas(struct clientConect * myCliente, int option);
+void sendPartidas(struct clientConect * myCliente);
 
 #endif
