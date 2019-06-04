@@ -28,7 +28,7 @@ def mysend(msg, s):
 
 def main():
     print(titulo)
-    myServer = conect('192.168.0.29', 50000)#'ebro.ec.tec.ac.cr',50000) #
+    myServer = conect('ebro.ec.tec.ac.cr',50000)#'192.168.0.29', 50000)#' #
     option = 0
     data = myServer.recv(120).decode()
     print(repr(data))
@@ -162,7 +162,6 @@ def startNewGame(server):
         elif(data == "ru"):
             userResp = int(input("▓▒╚══════■ Mi respuesta es:"))
             server.send(str(userResp).encode('utf-8'))#1.newGame 1.1 Get Users
-            sleep(1)
         else:
             resp = resp +1
             print("▓▒╠══»Resp"+str(resp)+": "+str(repr(data)))
