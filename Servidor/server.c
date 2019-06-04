@@ -217,7 +217,8 @@ void sendPartidas(struct clientConect * myCliente){
   struct conectionInfo * myConector = setInfo("localhost","malexander","Usuario.1", "JUEGODB");
   char * userName;
   getDataUserString(myCliente,userName);
-  //struct filaSelect* filauser = 
+  printf("%s name \n", userName);
+  //struct filaSelect* filauser =
   getPartidas(myConector, userName);
   printf("Salgo de la funcion");
   //manda la cantidad usuarios//printf("NUm de user %d", filauser->filas);

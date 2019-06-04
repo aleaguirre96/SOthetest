@@ -167,7 +167,7 @@ struct filaSelect* getPartidas(struct conectionInfo * Myconector, char* userName
   MYSQL_ROW fila_result;
   int status = 1;
   int idPartida = -1;
-  char * nameV = "";
+  char* input_data2[1] = {""};
   Myconector->stmt = mysql_stmt_init(Myconector->connection);
 
   if (!Myconector->stmt){
@@ -202,7 +202,7 @@ struct filaSelect* getPartidas(struct conectionInfo * Myconector, char* userName
 
       long unsigned int small_hash_len = 50;
       bResult[1].buffer_type = MYSQL_TYPE_STRING ;
-      bResult[1].buffer = (char *)nameV;
+      bResult[1].buffer = input_data2[0];
       bResult[1].buffer_length = small_hash_len;
       bResult[1].length = &small_hash_len ;
       bResult[1].is_null = 0;

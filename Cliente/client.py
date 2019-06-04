@@ -28,7 +28,7 @@ def mysend(msg, s):
 
 def main():
     print(titulo)
-    myServer = conect('192.168.0.29', 50000)
+    myServer = conect('192.168.0.29', 50000)#'ebro.ec.tec.ac.cr',50000) #
     option = 0
     data = myServer.recv(120).decode()
     print(repr(data))
@@ -104,7 +104,7 @@ def peticionPartidas(option, server, name, listaUse):
     if(option == 1):
         ##printPartidas(server, name)
         server.send('1'.encode('utf-8'))
-        ##mysend(name, server)
+        mysend(name, server)
     elif(option == 2):
         ##continuarPartida(server, name, listaUse)
         server.send('2'.encode('utf-8'))
@@ -147,8 +147,9 @@ def comenzarPartida(server, name, listaUse):
         print("▓╠» Cargue los usuarios primero")
 
 def startNewGame(server):
-    data = server.recv(120).decode('utf-8', 'ignore')#id de la pregunta
+    data = server.recv(120).decode('utf-8', 'ignore')#
     print(menJuego)
+    print(repr(data))
     preg = 0
     resp = 0
     while data != "eq": #dado el caso que
@@ -161,14 +162,15 @@ def startNewGame(server):
         elif(data == "ru"):
             userResp = int(input("▓▒╚══════■ Mi respuesta es:"))
             server.send(str(userResp).encode('utf-8'))#1.newGame 1.1 Get Users
+            sleep(1)
         else:
             resp = resp +1
             print("▓▒╠══»Resp"+str(resp)+": "+str(repr(data)))
-    data = server.recv(120).decode('utf-8', 'ignore')
-    if(data == "sg"):
-        print("▓╠»Partida Guardada, espera tu turno....")
-    else:
-        print("▓╠»No se pudo guardar la partida.")
+        data = server.recv(120).decode('utf-8', 'ignore')
+    #if(data == "sg"):
+    #    print("▓╠»Partida Guardada, espera tu turno....")
+    #else:
+    #    print("▓╠»No se pudo guardar la partida.")
 
 
 
