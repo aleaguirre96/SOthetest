@@ -28,7 +28,7 @@ def mysend(msg, s):
 
 def main():
     print(titulo)
-    myServer = conect('ebro.ec.tec.ac.cr',50000)#'192.168.0.29', 50000)#' #
+    myServer = conect('192.168.0.29', 50000)#' #'ebro.ec.tec.ac.cr',50000)
     option = 0
     data = myServer.recv(120).decode()
     print(repr(data))
@@ -102,9 +102,7 @@ def partidasUser(server, name):
 
 def peticionPartidas(option, server, name, listaUse):
     if(option == 1):
-        ##printPartidas(server, name)
-        server.send('1'.encode('utf-8'))
-        mysend(name, server)
+        printPartidas(server, name)
     elif(option == 2):
         ##continuarPartida(server, name, listaUse)
         server.send('2'.encode('utf-8'))
@@ -112,7 +110,10 @@ def peticionPartidas(option, server, name, listaUse):
         server.send('3'.encode('utf-8'))#1.newGame 1.1 Get Users
     return listaUse
 
-
+def printPartidas(server, name):
+    server.send('1'.encode('utf-8'))
+    mysend(name, server)
+    print("Mando mi nombre")
 
 # ////////////////////////////////////////////////////////////////////////////////////////////////
 #1.newGame 1.1Get User 2.Start Game 3.Salir
