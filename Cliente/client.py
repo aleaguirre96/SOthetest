@@ -104,7 +104,7 @@ def peticionPartidas(option, server, name, listaUse):
     if(option == 1):
         ##printPartidas(server, name)
         server.send('1'.encode('utf-8'))
-        mysend(name, server)
+        ##mysend(name, server)
     elif(option == 2):
         ##continuarPartida(server, name, listaUse)
         server.send('2'.encode('utf-8'))

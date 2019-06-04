@@ -207,7 +207,7 @@ struct filaSelect* getPartidas(struct conectionInfo * Myconector, char* userName
       bResult[1].length = &small_hash_len ;
       bResult[1].is_null = 0;
 
-      mysql_stmt_bind_result(Myconector->stmt, bResult);
+      //mysql_stmt_bind_result(Myconector->stmt, bResult);
       //mysql_stmt_store_result(Myconector->stmt);
 
       //while(!mysql_stmt_fetch(Myconector->stmt)) {
