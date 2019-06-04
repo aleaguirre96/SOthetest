@@ -218,6 +218,7 @@ void sendPartidas(struct clientConect * myCliente){
   char * userName;
   getDataUserString(myCliente,userName);
   printf("%s name \n", userName);
+  sleep(1);
   //struct filaSelect* filauser =
   getPartidas(myConector, userName);
   printf("Salgo de la funcion");

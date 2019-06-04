@@ -189,36 +189,48 @@ struct filaSelect* getPartidas(struct conectionInfo * Myconector, char* userName
       status = mysql_stmt_bind_param(Myconector->stmt, ps_params);
       if(!status){
         status = mysql_stmt_execute(Myconector->stmt);
+        printf("Llego aca dentro\n");
+        if(!status){
+          MYSQL_BIND    bResult[2];
+          memset(bResult, 0, sizeof(bResult));
+          bResult[0].buffer_type= MYSQL_TYPE_LONG;
+          bResult[0].buffer= (char *)&idPartida;
+          bResult[0].is_null= 0;
+          bResult[0].length= 0;
+          bResult[0].error= 0;
+
+          long unsigned int small_hash_len = 50;
+          bResult[1].buffer_type = MYSQL_TYPE_STRING ;
+          bResult[1].buffer = input_data2[0];
+          bResult[1].buffer_length = small_hash_len;
+          bResult[1].length = &small_hash_len ;
+          bResult[1].is_null = 0;
+
+
+          status = mysql_stmt_bind_result(Myconector->stmt, bResult);
+          if(status)
+            printf("Error: %s (errno: %d)\n",mysql_stmt_error(Myconector->stmt), mysql_stmt_errno(Myconector->stmt));
+
+          status = mysql_stmt_store_result(Myconector->stmt);
+          if(status)
+            printf("Error: %s (errno: %d)\n",mysql_stmt_error(Myconector->stmt), mysql_stmt_errno(Myconector->stmt));
+
+          status = mysql_stmt_fetch(Myconector->stmt);
+          //while(mysql_stmt_fetch(Myconector->stmt)) {
+          if(status)
+            printf("Error: %s (errno: %d)\n",mysql_stmt_error(Myconector->stmt), mysql_stmt_errno(Myconector->stmt));
+            //tmp->filas = idPartida;
+            //strcpy(tmp->fila_resultb,nameV);
+            //printf("IDPARTIDA: %d NAME: %s\n",idPartida,nameV);
+          //}
+          printf("Llego aca\n");
+          mysql_stmt_close(Myconector->stmt);
+
+        }
       }
     }
     if(status){
       printf("Error: %s (errno: %d)\n",mysql_stmt_error(Myconector->stmt), mysql_stmt_errno(Myconector->stmt));
-    }else{
-      MYSQL_BIND    bResult[2];
-      memset(bResult, 0, sizeof(bResult));
-      bResult[0].buffer_type= MYSQL_TYPE_LONG;
-      bResult[0].buffer= (char *)&idPartida;
-
-
-      long unsigned int small_hash_len = 50;
-      bResult[1].buffer_type = MYSQL_TYPE_STRING ;
-      bResult[1].buffer = input_data2[0];
-      bResult[1].buffer_length = small_hash_len;
-      bResult[1].length = &small_hash_len ;
-      bResult[1].is_null = 0;
-
-      mysql_stmt_bind_result(Myconector->stmt, bResult);
-      mysql_stmt_store_result(Myconector->stmt);
-
-      if(mysql_stmt_fetch(Myconector->stmt)) {
-      //if(status)
-        printf("Error: %s (errno: %d)\n",mysql_stmt_error(Myconector->stmt), mysql_stmt_errno(Myconector->stmt));
-        //tmp->filas = idPartida;
-        //strcpy(tmp->fila_resultb,nameV);
-        //printf("IDPARTIDA: %d NAME: %s\n",idPartida,nameV);
-      }
-      printf("Llego aca\n");
-      mysql_stmt_close(Myconector->stmt);
     }
     mysql_close(Myconector->connection);
   }

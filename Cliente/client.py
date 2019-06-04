@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import time
 import socket
 titulo = "   ╔═════════════════════════════════╗\n═══╣▓▓▓▒▒▒▒░░░░░ THE TEST ░░░░▒▒▒▒▓▓▓╠═══\n   ╚═════════════════════════════════╝\n"
 menuInicial = "╔═════════════════════════════════╗\n   Menu Inicial \n » 1-Login.\n » 2-Nuevo User.\n » 3-Salir\n╚═════════════════════════════════╝\n"
@@ -93,7 +93,7 @@ def peticionUserSesion(option, server, name):
 # ////////////////////////////////////////////////////////////////////////////////////////////////
 #2.Partidas 2.1Get Partidas 2.Continuar Partida 3.Salir
 def partidasUser(server, name):
-    server.send('2'.encode('utf-8')) #le avisamos al servidor que la opcion del usuer es 1
+    server.send('2'.encode('utf-8')) #le avisamos al servidor que la opcion del usuer es 2
     option = 0
     listaUse = []
     while option != 3:
@@ -112,6 +112,7 @@ def peticionPartidas(option, server, name, listaUse):
 
 def printPartidas(server, name):
     server.send('1'.encode('utf-8'))
+    time.sleep(1)
     mysend(name, server)
     print("Mando mi nombre")
 
