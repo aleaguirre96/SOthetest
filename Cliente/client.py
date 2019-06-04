@@ -28,7 +28,11 @@ def mysend(msg, s):
 
 def main():
     print(titulo)
+<<<<<<< HEAD
     myServer = conect('192.168.0.29', 50000)#'ebro.ec.tec.ac.cr',50000) #
+=======
+    myServer = conect('ebro.ec.tec.ac.cr', 50000)
+>>>>>>> master
     option = 0
     data = myServer.recv(120).decode()
     print(repr(data))
